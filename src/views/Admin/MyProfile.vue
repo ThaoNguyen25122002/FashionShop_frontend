@@ -1,165 +1,193 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-lg">
-    <div class="flex flex-col items-center mb-6">
-      <div class="relative">
-        <img
-          v-if="profile.avatar"
-          :src="profile.avatar"
-          alt="Avatar"
-          class="w-28 h-28 rounded-full shadow-md"
-        />
-        <div
-          v-else
-          class="w-28 h-28 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xl"
-        >
-          No Image
-        </div>
-        <button
-          v-if="isEditing"
-          @click="uploadAvatar"
-          class="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full hover:bg-blue-700 shadow-md"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+  <div class="p-4">
+    <form @submit.prevent="handleSubmit" class="bg-white shadow-md rounded-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Thông Tin Admin</h2>
+      <div class="flex space-x-6">
+        <!-- Avatar Section -->
+        <div class="w-1/3 flex flex-col items-center">
+          <div
+            class="w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 12l7-7 7 7M5 19l7-7 7 7"
+            <img
+              v-if="!infoAdmin.avatar"
+              class="w-full h-full object-cover"
+              src="@/assets/avatars/avatar.jpg"
+              alt="avatar"
             />
-          </svg>
+            <img
+              v-else
+              class="w-full h-full object-cover"
+              :src="imagePreview ? imagePreview : infoAdmin.avatar"
+              alt="avatar"
+            />
+          </div>
+          <div class="mt-5">
+            <label
+              for="file-upload"
+              class="mt-4 bg-white border border-red-500 text-red-500 px-4 py-2 rounded-lg cursor-pointer hover:bg-red-500 hover:text-white"
+            >
+              Chọn Ảnh
+            </label>
+            <input id="file-upload" type="file" @change="handleFileChange" class="hidden" />
+          </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="w-2/3 space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700">Họ Và Tên</label>
+              <input
+                type="text"
+                v-model="infoAdmin.name"
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700">Email</label>
+              <input
+                type="email"
+                v-model="infoAdmin.email"
+                disabled
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700">Số Điện Thoại</label>
+              <input
+                type="number"
+                v-model="infoAdmin.phone"
+                placeholder="Nhập số điện thoại"
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-gray-700">Chọn Tỉnh / Thành Phố</label>
+              <input
+                v-model="infoAdmin.city"
+                type="text"
+                placeholder="..."
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700">Quận/Huyện</label>
+              <input
+                type="text"
+                v-model="infoAdmin.district"
+                placeholder="..."
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700">Phường/Xã</label>
+              <input
+                type="text"
+                v-model="infoAdmin.ward"
+                placeholder="..."
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-gray-700">Nhập địa chỉ cụ thể</label>
+            <input
+              type="text"
+              v-model="infoAdmin.street_address"
+              placeholder="..."
+              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 flex justify-end space-x-4">
+        <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600">
+          Lưu Thông Tin
         </button>
       </div>
-    </div>
-
-    <div v-if="!isEditing" class="space-y-4 w-full">
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <p class="font-semibold text-gray-700">Tên:</p>
-        <p class="text-gray-600">{{ profile.name }}</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <p class="font-semibold text-gray-700">Số điện thoại:</p>
-        <p class="text-gray-600">{{ profile.phone }}</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <p class="font-semibold text-gray-700">Email:</p>
-        <p class="text-gray-600">{{ profile.email }}</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <p class="font-semibold text-gray-700">Địa chỉ:</p>
-        <p class="text-gray-600">{{ fullAddress }}</p>
-      </div>
-      <button
-        @click="isEditing = true"
-        class="w-full bg-blue-600 text-white py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
-      >
-        Chỉnh sửa thông tin
-      </button>
-    </div>
-
-    <form v-else class="space-y-4">
-      <input type="file" />
-      <input
-        v-model="editProfile.name"
-        type="text"
-        placeholder="Tên"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.phone"
-        type="text"
-        placeholder="Số điện thoại"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.email"
-        type="text"
-        placeholder="Email"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.city"
-        type="text"
-        placeholder="Thành phố"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.district"
-        type="text"
-        placeholder="Quận"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.ward"
-        type="text"
-        placeholder="Phường"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <input
-        v-model="editProfile.specificAddress"
-        type="text"
-        placeholder="Địa chỉ cụ thể"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-      />
-      <button
-        @click="updateProfile"
-        class="w-full bg-green-600 text-white py-2 rounded-lg shadow-md hover:bg-green-700 transition"
-      >
-        Cập nhật
-      </button>
-      <button
-        @click="cancelEdit"
-        class="w-full bg-gray-400 text-white py-2 rounded-lg shadow-md hover:bg-gray-500 transition"
-      >
-        Hủy bỏ
-      </button>
     </form>
   </div>
+  <loading-view v-if="isLoading" />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-
-const profile = ref({
-  avatar: null,
-  name: 'Thảo Nguyễn',
-  phone: '0123456789',
-  email: 'email@example.com',
-  city: 'TP. Hồ Chí Minh',
-  district: 'Quận 1',
-  ward: 'Phường Bến Nghé',
-  specificAddress: '123 Đường ABC'
-})
-
-const isEditing = ref(false)
-
-const editProfile = ref({ ...profile.value })
-
-const fullAddress = computed(() => {
-  return `${profile.value.specificAddress}, ${profile.value.ward}, ${profile.value.district}, ${profile.value.city}`
-})
-
-const updateProfile = () => {
-  profile.value = { ...editProfile.value }
-  isEditing.value = false
+import axios from '@/axios/axios'
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import LoadingView from '@/components/Loading/LoadingView.vue'
+import { useToast } from 'vue-toastification'
+// import useLocation from '@/composables/locationService'
+// const { getCities, cities } = useLocation()
+const infoAdmin = ref({})
+const isLoading = ref(false)
+const imagePreview = ref(null)
+const toast = useToast()
+const handleFileChange = (e) => {
+  infoAdmin.value.avatar = e.target.files[0]
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+  imagePreview.value = URL.createObjectURL(infoAdmin.value.avatar)
+}
+const getInfoAdmin = async () => {
+  isLoading.value = true
+  try {
+    const { data } = await axios.get('admin/profile')
+    infoAdmin.value = data.data
+    console.log(infoAdmin.value.avatar)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
-const cancelEdit = () => {
-  editProfile.value = { ...profile.value }
-  isEditing.value = false
+const handleSubmit = async () => {
+  // console.log(infoAdmin.value)
+
+  try {
+    const { data } = await axios.post('/admin/profile/update', infoAdmin.value, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    toast.success('Lưu thành công!', { timeout: 2000 })
+    // infoAdmin.value = data
+    // console.log(infoAdmin.value)
+  } catch (error) {
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message || 'Có lỗi xảy ra trong quá trình lưu thông tin.'
+      console.log('Error response data:', error.response.data)
+      console.log('Error status:', error.response.status)
+      console.log('Error headers:', error.response.headers)
+      toast.error(errorMessage, { timeout: 2000 })
+    } else if (error.request) {
+      console.log('No response received:', error.request)
+      toast.error('Không nhận được phản hồi từ server.', { timeout: 2000 })
+    } else {
+      console.log('Request setup error:', error.message)
+      toast.error('Lỗi trong quá trình thiết lập yêu cầu.', { timeout: 2000 })
+    }
+    console.log('Error config:', error.config)
+  }
 }
 
-// const uploadAvatar = () => {
+onMounted(() => {
+  getInfoAdmin()
+})
 
-//   alert('Upload avatar logic here!')
-// }
+onBeforeUnmount(() => {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+})
 </script>
-
-<style scoped>
-/* Thêm các kiểu tùy chỉnh nếu cần */
-</style>

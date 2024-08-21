@@ -17,6 +17,7 @@ import ListProducts from '@/views/Admin/Product/ListProducts.vue'
 import CreateProduct from '@/views/Admin/Product/CreateProduct.vue'
 import ListOrders from '@/views/Admin/Order/ListOrders.vue'
 import OrderDetail from '@/views/Admin/Order/OrderDetail.vue'
+import EditCategory from '@/views/Admin/Categories/EditCategory.vue'
 const routes = [
   // Member
   {
@@ -52,12 +53,12 @@ const routes = [
     path: '/admin/',
     name: 'AdminLayout',
     component: AdminLayout,
+    meta: { requiresAuth: true, role: 'admin' },
     children: [
       {
         path: '',
         name: 'Dashboard',
-        component: Dashboard,
-        meta: { requiresAuth: true, role: 'admin' }
+        component: Dashboard
       },
       {
         path: 'profile',
@@ -87,6 +88,12 @@ const routes = [
         path: 'category',
         name: 'category',
         component: ListCategories
+        // meta: { requiresAuth: true, role: 'admin' }
+      },
+      {
+        path: 'category/:id/edit',
+        name: 'category.edit',
+        component: EditCategory
         // meta: { requiresAuth: true, role: 'admin' }
       },
       {

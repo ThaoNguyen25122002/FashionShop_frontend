@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white shadow-md rounded-lg p-4">
-    <h1 class="text-2xl font-bold text-gray-700 mb-4">Quản Lý Người Dùng</h1>
+    <h1 class="text-2xl font-bold text-gray-700 mb-4">Quản Lý Sản Phẩm</h1>
     <router-link
       to="user/create"
       class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"

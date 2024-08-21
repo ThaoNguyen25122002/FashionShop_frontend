@@ -19,24 +19,28 @@
           </tr>
         </thead>
         <tbody class="text-gray-700 text-sm">
-          <tr class="border-b border-gray-200 hover:bg-gray-100">
-            <td class="py-3 px-4">1</td>
-            <td class="py-3 px-4">Trần Công Minh</td>
+          <tr
+            v-for="category in categories"
+            :key="category.id"
+            class="border-b border-gray-200 hover:bg-gray-100"
+          >
+            <td class="py-3 px-4">{{ category.id }}</td>
+            <td class="py-3 px-4">{{ category.name }}</td>
             <td class="py-3 px-4">1</td>
 
             <td class="py-3 px-4 flex space-x-2">
               <router-link
-                to="user/edit"
+                :to="{ name: 'category.edit', params: { id: category.id } }"
                 class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600"
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </router-link>
-              <router-link
-                to="user/delete"
+              <button
+                @click="deleteCategory(category.id)"
                 class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600"
               >
                 <i class="fa-solid fa-x"></i>
-              </router-link>
+              </button>
             </td>
           </tr>
 
@@ -95,4 +99,12 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import useCategory from '@/composables/handleCategory'
+import { onMounted } from 'vue'
+const { getCategories, categories, deleteCategory } = useCategory()
+
+onMounted(() => {
+  getCategories()
+})
+</script>
