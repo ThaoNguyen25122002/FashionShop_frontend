@@ -18,6 +18,7 @@ import CreateProduct from '@/views/Admin/Product/CreateProduct.vue'
 import ListOrders from '@/views/Admin/Order/ListOrders.vue'
 import OrderDetail from '@/views/Admin/Order/OrderDetail.vue'
 import EditCategory from '@/views/Admin/Categories/EditCategory.vue'
+import EditProduct from '@/views/Admin/Product/EditProduct.vue'
 const routes = [
   // Member
   {
@@ -112,6 +113,12 @@ const routes = [
         path: 'product/create',
         name: 'product.create',
         component: CreateProduct
+        // meta: { requiresAuth: true, role: 'admin' }
+      },
+      {
+        path: 'product/:id/edit',
+        name: 'product.edit',
+        component: EditProduct
         // meta: { requiresAuth: true, role: 'admin' }
       },
       {

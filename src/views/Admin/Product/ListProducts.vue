@@ -13,7 +13,7 @@
           <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             <th class="py-3 px-4">Ảnh</th>
             <th class="py-3 px-4">Tên Sản Phẩm</th>
-            <th class="py-3 px-4">Loại Sản Phẩm</th>
+            <th class="py-3 px-4">Tồn kho</th>
             <th class="py-3 px-4">Giá</th>
             <th class="py-3 px-4">Flash Sale</th>
 
@@ -21,35 +21,39 @@
           </tr>
         </thead>
         <tbody class="text-gray-700 text-sm">
-          <tr class="border-b border-gray-200 hover:bg-gray-100">
+          <tr
+            v-for="product in products"
+            :key="product.id"
+            class="border-b border-gray-200 hover:bg-gray-100"
+          >
             <td class="py-1 px-2 h-5 w-10">
               <div class="h-full w-full">
                 <img
                   class="h-full w-full object-cover rounded-md"
-                  src="@/assets/women/women2.jpg"
+                  :src="product.images[0].image_url"
                   alt="Women"
                 />
               </div>
             </td>
-            <td class="py-3 px-4">Áo polooooooooooooooooooooo</td>
-            <td class="py-3 px-4">Áo Thun</td>
-            <td class="py-3 px-4">$<span>100</span></td>
+            <td class="py-3 px-4">{{ product.name }}</td>
+            <td class="py-3 px-4">{{ product.sum_qty }}</td>
+            <td class="py-3 px-4">
+              <span>{{ product.price }}</span
+              >VND
+            </td>
             <td class="py-3 px-4">
               <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600" />
             </td>
             <td class="py-3 px-4 flex space-x-2">
               <router-link
-                to="user/edit"
+                :to="{ name: 'product.edit', params: { id: product.id } }"
                 class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600"
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </router-link>
-              <router-link
-                to="user/delete"
-                class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600"
-              >
+              <button class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600">
                 <i class="fa-solid fa-x"></i>
-              </router-link>
+              </button>
             </td>
           </tr>
 
@@ -108,4 +112,11 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import useProduct from '@/composables/Admin/products'
+import { onMounted } from 'vue'
+const { products, getProducts } = useProduct()
+onMounted(() => {
+  getProducts()
+})
+</script>

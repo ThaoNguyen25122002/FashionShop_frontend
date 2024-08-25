@@ -11,9 +11,9 @@ export default function useCategory() {
   const getCategories = async () => {
     isLoading.value = true
     try {
-      const { data } = await axios.get('admin/category')
+      const { data } = await axios.get('admin/categories')
       categories.value = data.data
-      console.log(categories.value)
+      // console.log(categories.value)
     } catch (error) {
       console.log(error)
     } finally {
@@ -25,7 +25,7 @@ export default function useCategory() {
     try {
       const { data } = await axios.get(`admin/category/${id}`)
       category.value = data.data
-      console.log(category.value)
+      // console.log(category.value)
     } catch (error) {
       console.log(error)
     } finally {
