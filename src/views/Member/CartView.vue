@@ -1,49 +1,56 @@
 <template>
-  <div class="container w-full mx-auto mt-10 p-10 bg-white shadow-2xl rounded-lg">
+  <div
+    v-if="store.cartItems.length"
+    class="container w-full mx-auto mt-10 p-10 bg-white shadow-2xl rounded-lg"
+  >
     <!-- Bảng giỏ hàng -->
     <table class="min-w-full bg-white border border-gray-200 rounded-lg">
       <thead class="bg-primary text-white">
         <tr>
-          <th class="py-4 px-4 text-left font-semibold">Products</th>
-          <th class="py-4 px-4 text-left font-semibold">Name</th>
-          <th class="py-4 px-4 text-right font-semibold">Price</th>
-          <th class="py-4 px-4 text-center font-semibold">Quantity</th>
-          <th class="py-4 px-4 text-right font-semibold">Total</th>
-          <th class="py-4 px-4 text-center font-semibold">Handle</th>
+          <th class="py-4 px-4 text-left font-semibold">Ảnh</th>
+          <th class="py-4 px-4 text-left font-semibold">Sản Phẩm</th>
+          <th class="py-4 px-4 text-right font-semibold">Giá</th>
+          <th class="py-4 px-4 text-center font-semibold">Số Lượng</th>
+          <th class="py-4 px-4 text-right font-semibold">Thành Tiền</th>
+          <th class="py-4 px-4 text-center font-semibold">Xóa</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in cartItems" :key="index" class="border-t">
+        <tr v-for="(item, index) in store.cartItems" :key="index" class="border-t">
           <td class="py-4 px-4">
             <img
-              src="../../assets/women/women4.jpg"
+              :src="item.image"
               alt="product image"
               class="w-20 h-20 object-cover rounded-lg mx-auto border border-gray-300"
             />
           </td>
-          <td class="py-4 px-4 text-gray-800 font-medium">{{ item.name }}</td>
-          <td class="py-4 px-4 text-right text-gray-800">{{ formatCurrency(item.price) }}</td>
+          <td class="py-4 px-4 text-gray-800 font-medium">
+            <div>{{ item.name }}</div>
+            <div class="text-gray-500 text-sm">Màu sắc: {{ item.color }}</div>
+            <div class="text-gray-500 text-sm">Kích thước: {{ item.size }}</div>
+          </td>
+          <td class="py-4 px-4 text-right text-gray-800">{{ store.formatCurrency(item.price) }}</td>
           <td class="py-4 px-4 text-center">
             <button
-              @click="decreaseQuantity(index)"
+              @click="store.decreaseQuantity(index)"
               class="px-3 py-1 bg-secondary text-white rounded-md hover:bg-opacity-90"
             >
               &minus;
             </button>
             <span class="mx-4 font-semibold text-gray-800">{{ item.quantity }}</span>
             <button
-              @click="increaseQuantity(index)"
+              @click="store.increaseQuantity(index)"
               class="px-3 py-1 bg-secondary text-white rounded-md hover:bg-opacity-90"
             >
               &#43;
             </button>
           </td>
           <td class="py-4 px-4 text-right text-gray-800 font-semibold">
-            {{ formatCurrency(item.price * item.quantity) }}
+            {{ store.formatCurrency(item.price * item.quantity) }}
           </td>
           <td class="py-4 px-4 text-center">
             <button
-              @click="removeItem(index)"
+              @click="store.removeItem(index)"
               class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
             >
               &#10005;
@@ -73,18 +80,20 @@
         </div>
       </div>
       <div class="md:col-span-1 bg-gray-50 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold text-gray-700">Cart Total</h2>
+        <h2 class="text-xl font-semibold text-gray-700">Đơn Hàng</h2>
         <div class="flex justify-between mt-4">
           <span class="text-gray-600">Subtotal:</span>
-          <span class="text-gray-800 font-semibold">{{ formatCurrency(subtotal) }}</span>
+          <span class="text-gray-800 font-semibold">{{
+            store.formatCurrency(store.cartTotal)
+          }}</span>
         </div>
-        <div v-if="discount > 0" class="flex justify-between mt-4">
+        <div class="flex justify-between mt-4">
           <span class="text-gray-600">Discount:</span>
-          <span class="text-gray-800 font-semibold">-{{ formatCurrency(discount) }}</span>
+          <span class="text-gray-800 font-semibold">-{{}}</span>
         </div>
         <div class="flex justify-between mt-4 border-t pt-4">
           <span class="text-gray-700 font-semibold">Total:</span>
-          <span class="text-gray-900 font-bold">{{ formatCurrency(total) }}</span>
+          <span class="text-gray-900 font-bold">{{}}</span>
         </div>
         <button
           @click="checkout"
@@ -95,50 +104,19 @@
       </div>
     </div>
   </div>
+  <div v-else class="py-[300px]">
+    <h4 class="text-secondary font-semibold text-2xl text-center">Giỏ hàng rỗng!!!</h4>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { useCartStore } from '@/stores/useCartStore'
+import { ref } from 'vue'
 
-const cartItems = ref([
-  { name: 'Big Banana', price: 2.99, quantity: 4, image: 'banana.jpg' },
-  { name: 'Potatoes', price: 2.99, quantity: 1, image: 'potato.jpg' },
-  { name: 'Awesome Broccoli', price: 2.99, quantity: 1, image: 'broccoli.jpg' }
-])
+const store = useCartStore()
+console.log(store.cartItems)
 
 const coupon = ref('')
-const discount = ref(0)
-
-const subtotal = computed(() =>
-  cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0)
-)
-
-const total = computed(() => subtotal.value - discount.value)
-
-const formatCurrency = (value) => `${value.toFixed(2)} $`
-
-const increaseQuantity = (index) => {
-  cartItems.value[index].quantity++
-}
-
-const decreaseQuantity = (index) => {
-  if (cartItems.value[index].quantity > 1) {
-    cartItems.value[index].quantity--
-  }
-}
-
-const removeItem = (index) => {
-  cartItems.value.splice(index, 1)
-}
-
-const applyCoupon = () => {
-  if (coupon.value === 'DISCOUNT10') {
-    discount.value = subtotal.value * 0.1
-  } else {
-    alert('Coupon không hợp lệ')
-    discount.value = 0
-  }
-}
 
 const checkout = () => {
   alert('Đã chuyển tới trang thanh toán')

@@ -2,10 +2,10 @@
   <div class="bg-white shadow-md rounded-lg p-4">
     <h1 class="text-2xl font-bold text-gray-700 mb-4">Quản Lý Sản Phẩm</h1>
     <router-link
-      to="user/create"
+      :to="{ name: 'product.create' }"
       class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
     >
-      Thêm Người Dùng Mới +
+      Thêm Sản Phẩm Mới +
     </router-link>
     <div class="mt-6 overflow-x-auto">
       <table class="w-full text-left border-collapse">
@@ -51,7 +51,10 @@
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </router-link>
-              <button class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600">
+              <button
+                @click="handleDelete(product.id)"
+                class="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600"
+              >
                 <i class="fa-solid fa-x"></i>
               </button>
             </td>
@@ -113,10 +116,30 @@
 </template>
 
 <script setup>
+import Swal from 'sweetalert2'
 import useProduct from '@/composables/Admin/products'
 import { onMounted } from 'vue'
-const { products, getProducts } = useProduct()
+const { products, getProducts, deleteProduct } = useProduct()
+const handleDelete = (id) => {
+  Swal.fire({
+    title: 'Bạn có chắc chắn muốn xóa?',
+    text: 'Hành động này không thể hoàn tác!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Thực hiện hành động xóa sản phẩm
+      deleteProduct(id)
+      Swal.fire('Đã xóa!', 'Sản phẩm đã được xóa.', 'success')
+    }
+  })
+}
 onMounted(() => {
   getProducts()
+  // console.log(products.value.length)
 })
 </script>

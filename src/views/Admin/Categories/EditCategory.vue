@@ -18,6 +18,7 @@
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Hiển Thị</label>
             <select
+              v-model="category.is_show"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               <option value="1">Hiện</option>
@@ -27,13 +28,12 @@
 
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Sắp Xếp</label>
-            <select
+            <input
+              type="text"
+              v-model="category.sort"
+              placeholder="Nhập tên danh mục"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="2">Cao</option>
-              <option value="1">Trung Bình</option>
-              <option value="0">Thấp</option>
-            </select>
+            />
           </div>
         </div>
 

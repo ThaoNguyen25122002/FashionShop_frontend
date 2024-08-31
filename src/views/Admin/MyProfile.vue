@@ -131,18 +131,18 @@ const isLoading = ref(false)
 const imagePreview = ref(null)
 const toast = useToast()
 const handleFileChange = (e) => {
-  infoAdmin.value.avatar = e.target.files[0]
+  infoAdmin.value.new_avatar = e.target.files[0]
   if (imagePreview.value) {
     URL.revokeObjectURL(imagePreview.value)
   }
-  imagePreview.value = URL.createObjectURL(infoAdmin.value.avatar)
+  imagePreview.value = URL.createObjectURL(infoAdmin.value.new_avatar)
 }
 const getInfoAdmin = async () => {
   isLoading.value = true
   try {
     const { data } = await axios.get('admin/profile')
     infoAdmin.value = data.data
-    console.log(infoAdmin.value.avatar)
+    // console.log(infoAdmin.value)
   } catch (error) {
     console.log(error)
   } finally {
@@ -151,7 +151,7 @@ const getInfoAdmin = async () => {
 }
 
 const handleSubmit = async () => {
-  // console.log(infoAdmin.value)
+  console.log(infoAdmin.value)
 
   try {
     const { data } = await axios.post('/admin/profile/update', infoAdmin.value, {

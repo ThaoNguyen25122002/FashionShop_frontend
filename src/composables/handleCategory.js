@@ -7,7 +7,9 @@ export default function useCategory() {
   const router = useRouter()
   const isLoading = ref(false)
   const categories = ref([])
-  const category = ref({})
+  const category = ref({
+    is_show: 1
+  })
   const getCategories = async () => {
     isLoading.value = true
     try {
@@ -48,6 +50,23 @@ export default function useCategory() {
       toast.error('Cập nhật thất bại!', { timeout: 2000 })
     }
   }
+  const createCategory = async (categoryData) => {
+    if (categoryData.name === '' || !categoryData.name) {
+      toast.error('Nhập danh mục!', { timeout: 2000 })
+      return
+    }
+    // console.log(categoryData)
+
+    try {
+      await axios.post(`admin/category/create`, categoryData)
+      category.value = {}
+      toast.success('Đã Thêm!', { timeout: 2000 })
+      router.push({ name: 'category' })
+    } catch (error) {
+      console.log(error)
+      toast.error('Cập nhật thất bại!', { timeout: 2000 })
+    }
+  }
   const deleteCategory = async (id) => {
     // console.log(id)
     try {
@@ -63,6 +82,7 @@ export default function useCategory() {
     deleteCategory,
     getCategory,
     getCategories,
+    createCategory,
     updateCategory,
     category,
     categories,

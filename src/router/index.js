@@ -19,6 +19,7 @@ import ListOrders from '@/views/Admin/Order/ListOrders.vue'
 import OrderDetail from '@/views/Admin/Order/OrderDetail.vue'
 import EditCategory from '@/views/Admin/Categories/EditCategory.vue'
 import EditProduct from '@/views/Admin/Product/EditProduct.vue'
+import ProductDetail from '@/views/Member/Products/ProductDetail.vue'
 const routes = [
   // Member
   {
@@ -32,10 +33,15 @@ const routes = [
         component: HomeView
       },
       {
+        path: 'product/:id/detail',
+        name: 'ProductDetail',
+        component: ProductDetail
+      },
+      {
         path: 'cart',
         name: 'CartView',
-        component: CartView,
-        meta: { requiresAuth: true, role: 'member' }
+        component: CartView
+        // meta: { requiresAuth: true, role: 'member' }
       },
       {
         path: 'login',
@@ -74,7 +80,7 @@ const routes = [
         // meta: { requiresAuth: true, role: 'admin' }
       },
       {
-        path: 'user/edit',
+        path: 'user/:id/edit',
         name: 'user.edit',
         component: Edit
         // meta: { requiresAuth: true, role: 'admin' }

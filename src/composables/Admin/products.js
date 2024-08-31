@@ -36,7 +36,7 @@ export default function useProduct() {
       }
     ]
   })
-  const checkError = (data) => {
+  const checkErrors = (data) => {
     // console.log('checked')
 
     data.price = data.price ? data.price.toString().replace(/\s+/g, '') : null // Loại bỏ khoảng trắng
@@ -73,7 +73,7 @@ export default function useProduct() {
     return true
   }
   const createProduct = async (data) => {
-    if (!checkError(data)) {
+    if (!checkErrors(data)) {
       toast.error(errors.value)
       return
     }
@@ -110,6 +110,9 @@ export default function useProduct() {
     try {
       const { data } = await axios.get('admin/products')
       products.value = data.data
+      if (!products.value.length) {
+        toast.warning('Hiện chưa có sản phẩm nào!')
+      }
       console.log(products.value)
     } catch (error) {
       console.log(error)
@@ -136,7 +139,7 @@ export default function useProduct() {
     }
   }
   const updateProduct = async (data, id) => {
-    if (!checkError(data)) {
+    if (!checkErrors(data)) {
       toast.error(errors.value)
       return
     }
@@ -166,6 +169,24 @@ export default function useProduct() {
       console.log('Error config:', error.config)
     }
   }
+  // Xóa sản phẩm
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`admin/product/${id}/delete`)
+      toast.success('Sản phẩm đã được xóa thành công!')
+      getProducts()
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || 'Có lỗi xảy ra trong quá trình xóa sản phẩm.'
+        toast.error(errorMessage, { timeout: 2000 })
+      } else if (error.request) {
+        toast.error('Không nhận được phản hồi từ server.', { timeout: 2000 })
+      } else {
+        toast.error('Lỗi trong quá trình thiết lập yêu cầu.', { timeout: 2000 })
+      }
+    }
+  }
   return {
     isLoading,
     product,
@@ -174,6 +195,7 @@ export default function useProduct() {
     updateProduct,
     getProducts,
     getProduct,
-    createProduct
+    createProduct,
+    deleteProduct
   }
 }

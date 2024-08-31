@@ -37,7 +37,7 @@
               class="absolute transform translate-x-1 group-hover:translate-x-[-20px] opacity-100 transition-all group-hover:opacity-0"
             >
               <i class="fa-duotone fa-solid fa-face-laugh-wink"></i>
-              <span> 0</span>
+              <span class="ml-1"> {{ store.countCartItems }}</span>
             </p>
             <i
               class="text-xl text-white drop-shadow-sm cursor-pointer fa-solid fa-cart-shopping transition-all duration-200"
@@ -73,7 +73,7 @@
         <li class="">
           <a class="inline-block cursor-pointer px-4 hover:text-primary duration-200">WishList</a>
         </li>
-        <li v-if="true">
+        <li v-if="!authMemberStore.isLoggedIn">
           <router-link
             to="login"
             class="inline-block cursor-pointer px-4 hover:text-primary duration-200"
@@ -83,7 +83,7 @@
         </li>
         <li v-else class="relative group">
           <a class="flex items-center gap-[3px] py-2 cursor-pointer">
-            Hi! Thao
+            Hi {{ authMemberStore.userName }}
             <span class="">
               <i
                 class="fa-solid fa-sort-down pb-[10px] group-hover:rotate-180 transition-all duration-200"
@@ -104,9 +104,12 @@
               >
             </li>
             <li>
-              <a class="inline-block cursor-pointer w-full rounded-md p-2 hover:bg-primary/20"
-                >Logout</a
+              <a
+                @click="authMemberStore.logout"
+                class="inline-block cursor-pointer w-full rounded-md p-2 hover:bg-primary/20"
               >
+                Logout
+              </a>
             </li>
           </ul>
         </li>
@@ -114,4 +117,20 @@
     </div>
   </header>
 </template>
-<script setup></script>
+<script setup>
+import { useCartStore } from '@/stores/useCartStore'
+import axios from '@/axios/axios'
+import { onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
+import { useAuthMemberStore } from '@/stores/useAuthMember'
+const toast = useToast()
+const store = useCartStore()
+const authMemberStore = useAuthMemberStore()
+const router = useRouter()
+// Khi component được mount, kiểm tra localStorage
+if (localStorage.getItem('token')) {
+  authMemberStore.isLoggedIn = true
+  authMemberStore.userName = JSON.parse(localStorage.getItem('user')).name
+}
+</script>

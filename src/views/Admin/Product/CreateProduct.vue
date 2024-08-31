@@ -152,7 +152,7 @@ const onFileChange = (event) => {
     }
     reader.readAsDataURL(file) // Đọc file dưới dạng Data URL để hiển thị ảnh
   }
-  console.log(product.images)
+  // console.log(product.images)
 }
 function addRow() {
   product.variations.push({ color: '', size: '', quantity: 1 })
