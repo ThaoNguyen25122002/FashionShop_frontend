@@ -13,15 +13,15 @@
             class="w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center"
           >
             <img
-              v-if="!user.avatar"
+              v-if="imagePreview"
               class="w-full h-full object-cover"
-              src="@/assets/avatars/avatar.jpg"
+              :src="imagePreview"
               alt="avatar"
             />
             <img
               v-else
               class="w-full h-full object-cover"
-              :src="imagePreview ? imagePreview : user.avatar"
+              :src="user.avatar ? user.avatar : '/src/assets/avatars/avatar.jpg'"
               alt="avatar"
             />
           </div>
@@ -99,7 +99,7 @@
             <label class="block text-gray-700">Nhập địa chỉ cụ thể</label>
             <input
               type="text"
-              v-model="user.address"
+              v-model="user.street_address"
               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
             />
           </div>

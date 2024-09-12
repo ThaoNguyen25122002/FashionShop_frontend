@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import axios from '@/axios/axios'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { useCartStore } from './useCartStore'
 
 export const useAuthMemberStore = defineStore('authMember', () => {
   const user = ref(null)
@@ -30,6 +31,7 @@ export const useAuthMemberStore = defineStore('authMember', () => {
     errors.value = ''
     return true
   }
+  const store = useCartStore()
   const login = async (formData) => {
     if (!checkLoginErrors(formData)) {
       toast.error(errors.value)
@@ -70,6 +72,9 @@ export const useAuthMemberStore = defineStore('authMember', () => {
       isLoggedIn.value = false
       userName.value = ''
       localStorage.clear()
+      store.cartItems = []
+      console.log(1)
+      console.log(store.cartItems)
       router.push({ name: 'LoginMemberView' })
     } catch (error) {
       const message = error.response?.data?.message

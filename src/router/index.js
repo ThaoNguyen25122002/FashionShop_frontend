@@ -20,6 +20,14 @@ import OrderDetail from '@/views/Admin/Order/OrderDetail.vue'
 import EditCategory from '@/views/Admin/Categories/EditCategory.vue'
 import EditProduct from '@/views/Admin/Product/EditProduct.vue'
 import ProductDetail from '@/views/Member/Products/ProductDetail.vue'
+import ForgotPassword from '@/views/Member/Auth/ForgotPassword.vue'
+import CategoryProducts from '@/views/Member/Products/CategoryProducts.vue'
+import ResetPassword from '@/views/Member/Auth/ResetPassword.vue'
+import MemberProfile from '@/views/Member/Profile/MemberProfile.vue'
+import ProductsSearch from '@/views/Member/Products/ProductsSearch.vue'
+import OrderView from '@/views/Member/Orders/OrderView.vue'
+import CheckoutView from '@/views/Member/Orders/CheckoutView.vue'
+import OrderDetailMember from '@/views/Member/Orders/OrderDetail.vue'
 const routes = [
   // Member
   {
@@ -41,17 +49,67 @@ const routes = [
         path: 'cart',
         name: 'CartView',
         component: CartView
-        // meta: { requiresAuth: true, role: 'member' }
       },
       {
         path: 'login',
         name: 'LoginMemberView',
-        component: LoginMemberView
+        component: LoginMemberView,
+        meta: { requiresGuest: true }
       },
       {
         path: 'register',
         name: 'RegisterMember',
-        component: RegisterMember
+        component: RegisterMember,
+        meta: { requiresGuest: true }
+      },
+      {
+        path: 'forgot-password',
+        name: 'ForgotPassword',
+        component: ForgotPassword,
+        meta: { requiresGuest: true }
+      },
+      {
+        path: '/category/:id',
+        name: 'CategoryProducts',
+        component: CategoryProducts
+      },
+      {
+        path: 'reset-password',
+        name: 'ResetPassword',
+        component: ResetPassword
+        // props: (route) => ({
+        //   token: route.query.token,
+        //   email: route.query.email
+        // })
+      },
+      {
+        path: 'profile',
+        name: 'MemberProfile',
+        component: MemberProfile,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/search',
+        name: 'Search',
+        component: ProductsSearch
+      },
+      {
+        path: 'checkout',
+        name: 'CheckoutView',
+        component: CheckoutView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'Order',
+        name: 'OrderView',
+        component: OrderView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'order/:orderId/detail',
+        name: 'OrderDetailMember',
+        component: OrderDetailMember,
+        meta: { requiresAuth: true }
       }
     ]
   },
@@ -71,73 +129,61 @@ const routes = [
         path: 'profile',
         name: 'Profile',
         component: MyProfile
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'user',
         name: 'user',
         component: Index
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'user/:id/edit',
         name: 'user.edit',
         component: Edit
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'user/create',
         name: 'user.create',
         component: Create
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'category',
         name: 'category',
         component: ListCategories
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'category/:id/edit',
         name: 'category.edit',
         component: EditCategory
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'category/create',
         name: 'category.create',
         component: CreateCategory
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'product',
         name: 'product',
         component: ListProducts
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'product/create',
         name: 'product.create',
         component: CreateProduct
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
         path: 'product/:id/edit',
         name: 'product.edit',
         component: EditProduct
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
-        path: 'order',
-        name: 'order',
+        path: 'orders',
+        name: 'orders',
         component: ListOrders
-        // meta: { requiresAuth: true, role: 'admin' }
       },
       {
-        path: 'order/detail',
+        path: 'order/:orderId/detail',
         name: 'order.detail',
         component: OrderDetail
-        // meta: { requiresAuth: true, role: 'admin' }
       }
     ]
   },
@@ -152,13 +198,83 @@ const router = createRouter({
   routes
 })
 
+// router.beforeEach((to, from, next) => {
+//   // const token = !!localStorage.getItem('token')
+//   // const role = JSON.parse(localStorage.getItem('user')).role
+//   // if (to.meta.requiresAuth && !token) {
+//   //   next({ name: 'LoginAdmin' })
+//   // } else {
+//   //   next()
+//   // }
+//   const loggedIn = !!localStorage.getItem('token')
+//   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+//   const role = user ? user.role : null
+//   // console.log(role)
+
+//   // Chặn truy cập vào trang login và register nếu đã đăng nhập
+//   if (to.meta.requiresGuest && loggedIn) {
+//     if (role === 'admin') {
+//       return next({ name: 'Dashboard' }) // Chuyển đến dashboard nếu là admin
+//     }
+//     return next({ name: 'HomeView' }) // Chuyển về home nếu là member
+//   }
+
+//   // Kiểm tra nếu route yêu cầu xác thực
+//   if (to.meta.requiresAuth) {
+//     if (!loggedIn) {
+//       // Chưa đăng nhập, chuyển hướng đến trang đăng nhập
+//       if (to.meta.role === 'admin') {
+//         return next({ name: 'LoginAdmin' }) // Nếu cố vào admin dashboard mà chưa đăng nhập
+//       } else {
+//         return next({ name: 'LoginMemberView' }) // Nếu cố vào trang member mà chưa đăng nhập
+//       }
+//     } else if (role !== to.meta.role) {
+//       // Nếu role không khớp với yêu cầu của route
+//       if (role === 'admin') {
+//         return next({ name: 'Dashboard' }) // Admin chuyển đến dashboard
+//       } else {
+//         return next({ name: 'HomeView' }) // Member chuyển đến home
+//       }
+//     }
+//   }
+
+//   // Nếu không có vấn đề gì, cho phép tiếp tục
+//   next()
+// })
 router.beforeEach((to, from, next) => {
-  const token = !!localStorage.getItem('token')
-  if (to.meta.requiresAuth && !token) {
-    next({ name: 'LoginAdmin' })
-  } else {
-    next()
+  const loggedIn = !!localStorage.getItem('token')
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+  const role = user ? user.role : null
+
+  // Chặn truy cập vào trang login và register nếu đã đăng nhập
+  if (to.meta.requiresGuest && loggedIn) {
+    if (role === 'admin') {
+      return next({ name: 'Dashboard' })
+    }
+    return next({ name: 'HomeView' })
   }
+
+  // Kiểm tra nếu route yêu cầu xác thực
+  if (to.meta.requiresAuth) {
+    if (!loggedIn) {
+      // Chưa đăng nhập, chuyển hướng đến trang đăng nhập
+      if (to.meta.role === 'admin') {
+        return next({ name: 'LoginAdmin' })
+      } else {
+        return next({ name: 'LoginMemberView' })
+      }
+    } else if (to.meta.role && role !== to.meta.role) {
+      // Nếu role không khớp với yêu cầu của route
+      if (role === 'admin') {
+        return next({ name: 'Dashboard' })
+      } else {
+        return next({ name: 'HomeView' })
+      }
+    }
+  }
+
+  // Nếu không có vấn đề gì, cho phép tiếp tục
+  next()
 })
 
 export default router

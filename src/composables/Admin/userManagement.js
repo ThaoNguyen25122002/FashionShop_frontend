@@ -121,7 +121,7 @@ export default function useUserManagement() {
     try {
       const { data } = await axios.get(`admin/user/${id}/edit`)
       user.value = data.data
-      // console.log(user.value)
+      console.log(user.value)
     } catch (error) {
       if (error.response) {
         const errorMessage =

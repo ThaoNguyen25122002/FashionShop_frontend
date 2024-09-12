@@ -11,24 +11,24 @@
         <!-- Customer Information -->
         <div>
           <h3 class="text-lg font-medium text-gray-600 mb-4">Thông Tin Khách Hàng</h3>
-          <p class="text-gray-700 font-medium">Trần Công Minh</p>
+          <p class="text-gray-700 font-medium">{{ order.user_name }}</p>
           <p class="text-gray-500">
-            128 Phùng Hưng, Phường Phúc La, Quận Hà Đông, Thành phố Hà Nội
+            {{ order.street_address }}, {{ order.ward }}, {{ order.district }}, {{ order.city }}
           </p>
-          <p class="text-gray-500">minhtcps30359@fpt.edu.vn</p>
-          <p class="text-gray-500">0943263274</p>
+          <p class="text-gray-500">{{ order.email }}</p>
+          <p class="text-gray-500">{{ order.phone }}</p>
         </div>
 
         <!-- Order Status, Payment and Shipping -->
         <div class="text-right">
           <div class="mb-4">
             <span class="text-gray-600 text-sm">Mã đơn hàng: </span>
-            <span class="font-semibold text-gray-800">66169b628e65af14ebcf87c2</span>
+            <span class="font-semibold text-gray-800">{{ order.invoice_code }}</span>
           </div>
           <button
             class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition ease-in-out duration-150"
           >
-            Đã Giao Hàng
+            {{ order.status }}
           </button>
           <div class="mt-6">
             <p class="text-gray-500">
@@ -40,7 +40,10 @@
               <span class="font-semibold text-gray-700">Giao Hàng Tiết Kiệm</span>
             </p>
             <p class="text-gray-500">
-              Ngày Đặt Hàng: <span class="font-semibold text-gray-700">21:00:02 10-04-2024</span>
+              Ngày Đặt Hàng:
+              <span class="font-semibold text-gray-700"
+                >{{ order.created_time }} {{ order.created_date }}</span
+              >
             </p>
           </div>
         </div>
@@ -51,11 +54,14 @@
     <div class="bg-white border border-gray-200 rounded-lg p-6 mb-8">
       <h3 class="text-xl font-semibold text-gray-700 mb-4">Thay Đổi Trạng Thái Đơn Hàng</h3>
       <select
+        v-model="order.status"
         class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
       >
-        <option value="delivered">Đã Giao Hàng</option>
         <option value="pending">Chờ Xác Nhận</option>
-        <option value="processing">Đang Xử Lý</option>
+        <option value="confirmed">Đã Xác Nhận</option>
+        <option value="shipped">Đang Vận Chuyển</option>
+        <option value="delivered">Đã Giao</option>
+        <option value="cancelled">Đã Hủy</option>
       </select>
     </div>
 
@@ -76,46 +82,55 @@
         </thead>
         <tbody>
           <!-- First Product -->
-          <tr class="border-b">
+          <tr class="border-b" v-for="item in order.details" :key="item.id">
             <td class="py-3 px-4">
-              <img
-                class="w-16 h-16 object-cover rounded-md"
-                src="@/assets/women/women2.jpg"
-                alt="Product 1"
-              />
+              <img class="w-16 h-16 object-cover rounded-md" :src="item.image" alt="Product 1" />
             </td>
             <td class="py-3 px-4">
-              <div class="text-gray-800 font-medium">Áo sơ mi cơ bản dài tay</div>
-              <div class="text-sm text-gray-500">Kích Thước: S | Màu Sắc: Đen</div>
+              <div class="text-gray-800 font-medium">{{ item.name }}</div>
+              <div class="text-sm text-gray-500">
+                Kích Thước: {{ item.size }} | Màu Sắc: {{ item.color }}
+              </div>
             </td>
-            <td class="py-3 px-4 text-right text-gray-700">149,000đ</td>
-            <td class="py-3 px-4 text-right text-gray-700">2</td>
-            <td class="py-3 px-4 text-right text-gray-700">298,000đ</td>
-          </tr>
-          <!-- Second Product -->
-          <tr class="border-b">
-            <td class="py-3 px-4">
-              <img
-                class="w-16 h-16 object-cover rounded-md"
-                src="@/assets/women/women3.jpg"
-                alt="Product 2"
-              />
+            <td class="py-3 px-4 text-right text-gray-700">{{ formatCurrency(item.price) }}</td>
+            <td class="py-3 px-4 text-right text-gray-700">{{ item.quantity }}</td>
+            <td class="py-3 px-4 text-right text-gray-700">
+              {{ formatCurrency(item.price * item.quantity) }}
             </td>
-            <td class="py-3 px-4">
-              <div class="text-gray-800 font-medium">Áo Polo xơ cứng phối kẻ C9POL504M</div>
-              <div class="text-sm text-gray-500">Kích Thước: M | Màu Sắc: Đen</div>
-            </td>
-            <td class="py-3 px-4 text-right text-gray-700">211,650đ</td>
-            <td class="py-3 px-4 text-right text-gray-700">6</td>
-            <td class="py-3 px-4 text-right text-gray-700">1,269,900đ</td>
           </tr>
         </tbody>
       </table>
+      <div class="mt-3 text-right">
+        <span class="font-bold">Tổng Tiền: </span> {{ formatCurrency(order.total_amount) }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import useOrder from '@/composables/Admin/useOrders'
+import { useCartStore } from '@/stores/useCartStore'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+const { formatCurrency } = useCartStore()
+const { getOrderDetail, updateOrderStatus, order } = useOrder()
+const route = useRoute()
+const orderId = route.params.orderId
+const flag = ref(true)
+watch(
+  () => order.value.status,
+  () => {
+    if (flag.value) {
+      flag.value = false
+    } else {
+      // console.log(order.value.status)
+      updateOrderStatus()
+    }
+  }
+)
+onMounted(async () => {
+  getOrderDetail(orderId)
+})
 // Add any script logic if needed
 </script>
 

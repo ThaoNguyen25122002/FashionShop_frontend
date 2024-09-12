@@ -114,7 +114,7 @@
             <label class="block text-gray-700">Nhập địa chỉ cụ thể</label>
             <input
               type="text"
-              v-model="user.address"
+              v-model="user.street_address"
               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
             />
           </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
     <form @submit.prevent="handleSubmit" class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Thông Tin Admin</h2>
+      <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Thông Tin User</h2>
       <div class="flex space-x-6">
         <!-- Avatar Section -->
         <div class="w-1/3 flex flex-col items-center">
@@ -9,9 +9,9 @@
             class="w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center"
           >
             <img
-              v-if="infoAdmin.avatar"
+              v-if="infoMember.avatar"
               class="w-full h-full object-cover"
-              :src="infoAdmin.avatar"
+              :src="infoMember.avatar"
               alt="avatar"
             />
             <img
@@ -20,24 +20,6 @@
               :src="imagePreview ? imagePreview : '/src/assets/avatars/avatar.jpg'"
               alt="avatar"
             />
-            <!-- <img
-              v-if="imagePreview"
-              class="w-full h-full object-cover"
-              :src="imagePreview"
-              alt="avatar"
-            />
-            <img
-              v-else-if="infoAdmin.avatar"
-              class="w-full h-full object-cover"
-              :src="infoAdmin.avatar"
-              alt="avatar"
-            />
-            <img
-              v-else
-              class="w-full h-full object-cover"
-              src="/src/assets/avatars/avatar.jpg"
-              alt="avatar"
-            /> -->
           </div>
           <div class="mt-5">
             <label
@@ -57,7 +39,7 @@
               <label class="block text-gray-700">Họ Và Tên</label>
               <input
                 type="text"
-                v-model="infoAdmin.name"
+                v-model="infoMember.name"
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
               />
             </div>
@@ -65,7 +47,7 @@
               <label class="block text-gray-700">Email</label>
               <input
                 type="email"
-                v-model="infoAdmin.email"
+                v-model="infoMember.email"
                 disabled
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
               />
@@ -77,7 +59,7 @@
               <label class="block text-gray-700">Số Điện Thoại</label>
               <input
                 type="text"
-                v-model="infoAdmin.phone"
+                v-model="infoMember.phone"
                 placeholder="Nhập số điện thoại"
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               />
@@ -88,7 +70,7 @@
             <div>
               <label class="block text-gray-700">Chọn Tỉnh / Thành Phố</label>
               <input
-                v-model="infoAdmin.city"
+                v-model="infoMember.city"
                 type="text"
                 placeholder="..."
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
@@ -98,7 +80,7 @@
               <label class="block text-gray-700">Quận/Huyện</label>
               <input
                 type="text"
-                v-model="infoAdmin.district"
+                v-model="infoMember.district"
                 placeholder="..."
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
               />
@@ -107,7 +89,7 @@
               <label class="block text-gray-700">Phường/Xã</label>
               <input
                 type="text"
-                v-model="infoAdmin.ward"
+                v-model="infoMember.ward"
                 placeholder="..."
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
               />
@@ -118,7 +100,7 @@
             <label class="block text-gray-700">Nhập địa chỉ cụ thể</label>
             <input
               type="text"
-              v-model="infoAdmin.street_address"
+              v-model="infoMember.street_address"
               placeholder="..."
               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
             />
@@ -142,25 +124,24 @@ import axios from '@/axios/axios'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import LoadingView from '@/components/Loading/LoadingView.vue'
 import { useToast } from 'vue-toastification'
-// import useLocation from '@/composables/locationService'
-// const { getCities, cities } = useLocation()
-const infoAdmin = ref({})
+const infoMember = ref({})
 const isLoading = ref(false)
 const imagePreview = ref(null)
 const toast = useToast()
 const handleFileChange = (e) => {
-  infoAdmin.value.new_avatar = e.target.files[0]
+  infoMember.value.new_avatar = e.target.files[0]
   if (imagePreview.value) {
     URL.revokeObjectURL(imagePreview.value)
   }
-  imagePreview.value = URL.createObjectURL(infoAdmin.value.new_avatar)
+  imagePreview.value = URL.createObjectURL(infoMember.value.new_avatar)
+  console.log(imagePreview.value)
 }
-const getInfoAdmin = async () => {
+const getInfoMember = async () => {
   isLoading.value = true
   try {
-    const { data } = await axios.get('admin/profile')
-    infoAdmin.value = data.data
-    // console.log(infoAdmin.value)
+    const { data } = await axios.get('profile')
+    infoMember.value = data.data
+    // console.log(infoMember.value)
   } catch (error) {
     console.log(error)
   } finally {
@@ -169,17 +150,20 @@ const getInfoAdmin = async () => {
 }
 
 const handleSubmit = async () => {
-  console.log(infoAdmin.value)
+  // console.log(infoMember.value)
 
   try {
-    const { data } = await axios.post('/admin/profile/update', infoAdmin.value, {
+    const { data } = await axios.post('/profile/update', infoMember.value, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
     toast.success('Lưu thành công!', { timeout: 2000 })
-    // infoAdmin.value = data
-    // console.log(infoAdmin.value)
+    console.log(data.data)
+    localStorage.setItem('user', JSON.stringify(data.data))
+
+    // infoMember.value = data
+    // console.log(infoMember.value)
   } catch (error) {
     if (error.response) {
       const errorMessage =
@@ -200,7 +184,7 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
-  getInfoAdmin()
+  getInfoMember()
 })
 
 onBeforeUnmount(() => {

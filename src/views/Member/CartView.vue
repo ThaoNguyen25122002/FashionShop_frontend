@@ -96,7 +96,7 @@
           <span class="text-gray-900 font-bold">{{}}</span>
         </div>
         <button
-          @click="checkout"
+          @click="checkout(store.cartItems)"
           class="w-full mt-6 px-6 py-2 bg-secondary text-white rounded-lg hover:bg-opacity-90"
         >
           Checkout
@@ -112,14 +112,34 @@
 <script setup>
 import { useCartStore } from '@/stores/useCartStore'
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+const isLogin = ref(!!localStorage.getItem('token'))
+const router = useRouter()
 const store = useCartStore()
+const toast = useToast()
 console.log(store.cartItems)
-
+const user = ref(JSON.parse(localStorage.getItem('user')) || null)
 const coupon = ref('')
+const errors = ref('')
+const checkErrors = (data) => {
+  if (!data.phone || !data.city || !data.district || !data.ward || !data.street_address) {
+    errors.value = 'Vui cập nhập đầy đủ địa chỉ và thông tin liên hệ để đặt hàng!'
+    return false
+  }
 
-const checkout = () => {
-  alert('Đã chuyển tới trang thanh toán')
+  errors.value = ''
+  return true
+}
+const checkout = (cartItems) => {
+  if (!isLogin.value) {
+    toast.error('Vui lòng đăng nhập để đặt hàng!', { timeout: 1500 })
+    return
+  } else if (!checkErrors(user.value)) {
+    toast.error(errors.value, { timeout: 2000 })
+    return
+  }
+  router.push({ name: 'CheckoutView' })
 }
 </script>
 

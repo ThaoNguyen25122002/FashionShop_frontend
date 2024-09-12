@@ -10,9 +10,12 @@
             v-for="category in categories"
             :key="category.id"
           >
-            <h3 class="font-medium text-secondary group-hover:text-primary">
+            <router-link
+              :to="{ name: 'CategoryProducts', params: { id: category.id } }"
+              class="font-medium text-secondary group-hover:text-primary"
+            >
               {{ category.name }}
-            </h3>
+            </router-link>
           </button>
         </div>
       </div>

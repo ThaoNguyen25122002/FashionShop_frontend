@@ -12,7 +12,7 @@
         </div>
         <div>
           <h2 class="font-bold text-xl">Đơn Hàng</h2>
-          <p class="text-2xl">9</p>
+          <p class="text-2xl">{{ statistics.ordersCount }}</p>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         </div>
         <div>
           <h2 class="font-bold text-xl">Tổng Doanh Thu</h2>
-          <p class="text-2xl">10,906,800đ</p>
+          <p class="text-2xl">{{ formatCurrency(statistics.totalRevenue) }}</p>
         </div>
       </div>
     </div>
@@ -36,7 +36,7 @@
         </div>
         <div>
           <h2 class="font-bold text-xl">Sản Phẩm</h2>
-          <p class="text-2xl">1.149</p>
+          <p class="text-2xl">{{ statistics.productsCount }}</p>
         </div>
       </div>
     </div>
@@ -60,6 +60,7 @@
     <table class="min-w-full table-auto">
       <thead>
         <tr class="bg-gray-200 text-gray-700">
+          <th class="py-2 px-4">Mã Đơn Hàng</th>
           <th class="py-2 px-4">Khách Hàng</th>
           <th class="py-2 px-4">Ngày Đặt Hàng</th>
           <th class="py-2 px-4">Giỏ Hàng</th>
@@ -68,24 +69,58 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b text-center">
-          <td class="py-2 px-4">Trần Công Minh</td>
-          <td class="py-2 px-4">21:00:02 10-04-2024</td>
-          <td class="py-2 px-4">2 Sản Phẩm</td>
+        <tr class="border-b text-center" v-for="item in pendingOrders" :key="item.id">
+          <td class="py-2 px-4">{{ item.invoice_code }}</td>
+          <td class="py-2 px-4">{{ item.user_name }}</td>
+          <td class="py-2 px-4">{{ item.created_time }} {{ item.created_date }}</td>
+          <td class="py-2 px-4">{{ item.product_count }} Sản Phẩm</td>
           <td class="py-2 px-4">
-            <span class="bg-blue-500 text-white px-2 py-1 rounded-full">Chờ Xác Nhận</span>
+            <span class="bg-blue-500 text-white px-2 py-1 rounded-full">{{ item.status }}</span>
           </td>
           <td class="py-2 px-4">
-            <router-link :to="{ name: 'order.detail' }"
-              ><a class="bg-red-500 text-white p-2 rounded-lg mr-2">
-                <i class="fas fa-eye"></i> </a
-            ></router-link>
+            <router-link :to="{ name: 'order.detail', params: { orderId: item.id } }">
+              <button class="bg-red-500 text-white py-2 px-3 rounded-lg mr-2">
+                <i class="fas fa-eye"></i>
+              </button>
+            </router-link>
+            <button
+              @click="orderConfirm(item.id)"
+              class="bg-blue-600 text-white py-2 px-3 rounded-lg mr-2"
+            >
+              <i class="fa-solid fa-check"></i>
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <router-link :to="{ name: 'order' }" href="#" class="text-blue-500 mt-4 block"
+    <router-link :to="{ name: 'orders' }" class="text-blue-500 mt-4 block"
       >Xem tất cả đơn hàng →</router-link
     >
   </div>
+  <LoadingView v-if="isLoading" />
 </template>
+
+<script setup>
+import LoadingView from '@/components/Loading/LoadingView.vue'
+import axios from '@/axios/axios'
+import useOrder from '@/composables/Admin/useOrders'
+import { useCartStore } from '@/stores/useCartStore'
+import { onMounted, ref } from 'vue'
+const { formatCurrency } = useCartStore()
+const statistics = ref({})
+const isLoading = ref(true)
+const { getPendingOrders, orderConfirm, pendingOrders } = useOrder()
+const getStatistics = async () => {
+  try {
+    const { data } = await axios.get('admin/stats')
+    statistics.value = data.data
+    // console.log(data)
+  } catch (error) {
+    console.log(error)
+  }
+}
+onMounted(async () => {
+  await Promise.all([getPendingOrders(), getStatistics()])
+  isLoading.value = false
+})
+</script>

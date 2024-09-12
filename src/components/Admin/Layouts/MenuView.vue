@@ -63,7 +63,7 @@ const navItems = [
     name: '#',
     active: false,
     label: 'Orders',
-    children: [{ name: 'order', active: false, label: 'Order List', children: [], icon: null }],
+    children: [{ name: 'orders', active: false, label: 'Order List', children: [], icon: null }],
     icon: 'fa-solid fa-car-side'
   }
 ]

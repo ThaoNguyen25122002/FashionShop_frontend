@@ -49,9 +49,7 @@ const homeApi = async () => {
   }
 }
 
-onMounted(async () => {
-  await homeApi()
-  console.log(newProducts.value)
-  console.log(categories.value)
+onMounted(() => {
+  homeApi()
 })
 </script>
